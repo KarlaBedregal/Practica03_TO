@@ -1,0 +1,292 @@
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[a4paper, top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+% Configuración del estilo para C++
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{gray}\itshape,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false,
+    tabsize=4,
+    columns=fullflexible,
+    keepspaces=true,
+    numbers=left,
+    numbersep=6pt,
+    xleftmargin=2.2em,
+    framexleftmargin=2.2em,
+    numberstyle=\tiny\color{gray},
+    morekeywords={override}
+}
+
+% Estilo para la salida de consola
+\lstdefinestyle{consola}{
+    language={},
+    basicstyle=\ttfamily\small\color{white},
+    backgroundcolor=\color{black!85},
+    frame=single,
+    numbers=none,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true
+}
+
+% Estilo de las cajas UML
+\tikzset{
+  clase/.style={draw, rectangle, font=\ttfamily\scriptsize, fill=blue!5, inner sep=4pt},
+  hereda/.style={-{Triangle[open,length=3mm,width=3mm]}, thick}
+}
+
+\setlength{\emergencystretch}{3em}
+\sloppy
+\begin{document}
+
+% Encabezado con logo a la izquierda y texto a la derecha
+\noindent
+\begin{minipage}{0.25\textwidth}
+    \includegraphics[width=\linewidth]{unsa_logo.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.72\textwidth}
+    \centering
+    \footnotesize
+    \textbf{UNIVERSIDAD NACIONAL DE SAN AGUSTÍN DE AREQUIPA} \\
+    \textbf{FACULTAD DE INGENIERÍA DE PRODUCCIÓN Y SERVICIOS} \\
+    \textbf{ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS}
+\end{minipage}
+
+\vspace{0.01cm}
+
+\begin{center}
+    \textbf{\normalsize Práctica 03}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent
+\textbf{Asignatura:} Tecnología de Objetos \hfill
+\textbf{NOTA:} \rule{2cm}{0.4pt}
+
+\vspace{0.5cm}
+
+\noindent
+\textbf{Apellidos y Nombres:} Bedregal Coaguila, Karla Miluska
+
+\vspace{0.5cm}
+
+\noindent
+\textbf{Indicaciones:}
+
+\begin{itemize}[leftmargin=0.5cm]
+    \item La nota será ponderada en la evaluación CONTINUA
+    \item Responda de manera clara
+    \item Tiempo de duración del examen: 50 minutos
+\end{itemize}
+
+\section*{Ejercicios de programación en C++}
+
+% =====================================================================
+\section*{Conceptos base}
+
+\textbf{Clase abstracta.} Clase que sirve como molde y de la que no se pueden crear objetos. En C++ se vuelve abstracta cuando tiene al menos un método virtual puro.
+
+\textbf{Método virtual puro.} Método declarado con \texttt{= 0} y sin cuerpo en la clase base. Obliga a cada clase hija a implementarlo; si no lo hace, la hija también queda abstracta.
+
+\textbf{Herencia.} Las clases derivadas se crean con \texttt{class Hija : public Padre} y reciben los atributos y métodos del padre.
+
+\textbf{\texttt{override}.} Indica que se sobrescribe un método virtual del padre. Si la firma no coincide, el compilador marca error.
+
+\textbf{Polimorfismo.} Al guardar objetos derivados en punteros de la clase base, el mismo llamado ejecuta la versión de la clase real del objeto. Esto se decide en tiempo de ejecución (\textbf{enlace dinámico}).
+
+\textbf{Destructor virtual.} Necesario para que al hacer \texttt{delete} sobre un puntero de la clase base se llame también al destructor de la clase hija.
+
+\textbf{\texttt{protected}.} El atributo común (\texttt{nombre} o \texttt{marca}) es \texttt{protected} para que las hijas puedan usarlo, pero sigue oculto desde fuera.
+
+% =====================================================================
+\section{Ejercicio 01. (10 puntos) Sistema de empleados}
+
+\subsection*{Enunciado (resumen)}
+Crear la clase abstracta \texttt{Empleado} con el atributo \texttt{nombre}, el método virtual puro \texttt{calcularSalario()} y el método \texttt{mostrarInformacion()}. De ella derivan \texttt{EmpleadoTiempoCompleto}, \texttt{EmpleadoMedioTiempo} y \texttt{EmpleadoPorComision}, cada uno con su propia forma de calcular el salario. Luego se guardan en una colección de punteros a \texttt{Empleado} y se muestran usando polimorfismo.
+
+\subsection*{Diagrama de clases}
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.6cm and 0.4cm]
+\node[clase] (emp) {\begin{tabular}{@{}l@{}}\textbf{\textit{Empleado}} \{abstracta\}\\\hline
+\# nombre : string\\\hline
++ \textit{calcularSalario() : double = 0}\\
++ \textit{getTipo() : string = 0}\\
++ mostrarInformacion() : void\end{tabular}};
+
+\node[clase, below=1.6cm of emp, xshift=-5.3cm] (tc) {\begin{tabular}{@{}l@{}}\textbf{EmpleadoTiempoCompleto}\\\hline
+- salarioFijo : double\\\hline
++ calcularSalario()\\+ getTipo()\end{tabular}};
+
+\node[clase, below=1.6cm of emp] (mt) {\begin{tabular}{@{}l@{}}\textbf{EmpleadoMedioTiempo}\\\hline
+- horasTrabajadas : int\\- pagoPorHora : double\\\hline
++ calcularSalario()\\+ getTipo()\end{tabular}};
+
+\node[clase, below=1.6cm of emp, xshift=5.3cm] (pc) {\begin{tabular}{@{}l@{}}\textbf{EmpleadoPorComision}\\\hline
+- salarioBase : double\\- ventas : double\\- porcentajeComision : double\\\hline
++ calcularSalario()\\+ getTipo()\end{tabular}};
+
+\draw[hereda] (tc.north) -- (emp.south);
+\draw[hereda] (mt.north) -- (emp.south);
+\draw[hereda] (pc.north) -- (emp.south);
+\end{tikzpicture}
+\end{center}
+
+\noindent Cursiva: método abstracto; \texttt{\#} protected, \texttt{-} private, \texttt{+} public.
+
+\subsection*{Explicación de la solución}
+
+\textbf{Clase \texttt{Empleado}.} Es la clase abstracta. Tiene el atributo \texttt{nombre} y los métodos virtuales puros \texttt{calcularSalario()} y \texttt{getTipo()}, por eso no se puede instanciar. El método \texttt{mostrarInformacion()} está escrito una sola vez en la base, pero dentro llama a \texttt{calcularSalario()}, así que cada objeto muestra su propio salario.
+
+\textbf{Clases derivadas.} Cada una llama al constructor del padre (\texttt{: Empleado(nombre)}) y calcula el salario de forma distinta:
+\begin{itemize}[leftmargin=0.5cm]
+    \item \texttt{EmpleadoTiempoCompleto}: $\text{Salario} = \text{salarioFijo}$
+    \item \texttt{EmpleadoMedioTiempo}: $\text{Salario} = \text{horasTrabajadas} \times \text{pagoPorHora}$
+    \item \texttt{EmpleadoPorComision}: $\text{Salario} = \text{salarioBase} + \text{ventas} \times \frac{\text{porcentaje}}{100}$
+\end{itemize}
+
+\textbf{Función \texttt{main()}.} Se crea un \texttt{vector<Empleado*>} con un empleado de cada tipo. Un solo bucle llama a \texttt{mostrarInformacion()} en todos sin preguntar de qué tipo son, eso lo resuelve el polimorfismo. Al final se libera la memoria con \texttt{delete}.
+
+\subsection*{Código completo: \texttt{ejercicio01\_empleados.cpp}}
+
+\lstinputlisting{ejercicio01_empleados.cpp}
+
+\subsection*{Compilación y ejecución}
+
+\begin{lstlisting}[style=consola]
+g++ -std=c++17 -Wall -o ej1 ejercicio01_empleados.cpp
+./ej1
+\end{lstlisting}
+
+\subsection*{Salida obtenida}
+
+\begin{lstlisting}[style=consola]
+===== SISTEMA DE EMPLEADOS =====
+
+Nombre : Ana Torres
+Tipo   : Tiempo completo
+Salario: S/ 3500.00
+--------------------------------
+Nombre : Luis Quispe
+Tipo   : Medio tiempo
+Salario: S/ 1240.00
+--------------------------------
+Nombre : Maria Flores
+Tipo   : Por comision
+Salario: S/ 3200.00
+--------------------------------
+Total en planilla: S/ 7940.00
+\end{lstlisting}
+
+\subsection*{Comprobación}
+Medio tiempo: $80 \times 15.50 = 1240$. Por comisión: $1200 + 20000 \times 0.10 = 3200$. Total: $3500 + 1240 + 3200 = 7940$. Coincide con la salida del programa.
+
+\subsection*{Conclusión}
+La clase abstracta \texttt{Empleado} define la interfaz común y cada hija pone su forma de calcular el salario. Para agregar otro tipo de empleado basta con crear una nueva clase, sin cambiar el bucle del \texttt{main}.
+
+% =====================================================================
+\newpage
+\section{Ejercicio 02. (10 puntos) Sistema de vehículos}
+
+\subsection*{Enunciado (resumen)}
+Crear la clase abstracta \texttt{Vehiculo} con el atributo \texttt{marca} y los métodos virtuales puros \texttt{acelerar()} y \texttt{frenar()}. De ella derivan \texttt{Automovil}, \texttt{Motocicleta} y \texttt{Camion}, cada una con su propio comportamiento. Después se guardan en un \texttt{vector<Vehiculo*>} y se recorre el vector ejecutando ambos métodos con polimorfismo.
+
+\subsection*{Diagrama de clases}
+
+\begin{center}
+\begin{tikzpicture}
+\node[clase] (veh) {\begin{tabular}{@{}l@{}}\textbf{\textit{Vehiculo}} \{abstracta\}\\\hline
+\# marca : string\\\hline
++ \textit{acelerar() : void = 0}\\
++ \textit{frenar() : void = 0}\\
++ getMarca() : string\end{tabular}};
+
+\node[clase, below=1.6cm of veh, xshift=-5cm] (auto) {\begin{tabular}{@{}l@{}}\textbf{Automovil}\\\hline
+- numeroPuertas : int\\\hline
++ acelerar()\\+ frenar()\end{tabular}};
+
+\node[clase, below=1.6cm of veh] (moto) {\begin{tabular}{@{}l@{}}\textbf{Motocicleta}\\\hline
+- cilindrada : int\\\hline
++ acelerar()\\+ frenar()\end{tabular}};
+
+\node[clase, below=1.6cm of veh, xshift=5cm] (cam) {\begin{tabular}{@{}l@{}}\textbf{Camion}\\\hline
+- capacidadToneladas : double\\\hline
++ acelerar()\\+ frenar()\end{tabular}};
+
+\draw[hereda] (auto.north) -- (veh.south);
+\draw[hereda] (moto.north) -- (veh.south);
+\draw[hereda] (cam.north) -- (veh.south);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{Explicación de la solución}
+
+\textbf{Clase \texttt{Vehiculo}.} Clase abstracta con el atributo \texttt{marca}, destructor virtual y los métodos virtuales puros \texttt{acelerar()} y \texttt{frenar()}. Solo se usa como tipo de puntero.
+
+\textbf{Clases derivadas.} Cada una tiene un atributo propio e implementa los dos métodos con \texttt{override}:
+\begin{itemize}[leftmargin=0.5cm]
+    \item \texttt{Automovil} (número de puertas): acelera suave y frena con disco y ABS.
+    \item \texttt{Motocicleta} (cilindrada): acelera rápido y frena con ambos frenos.
+    \item \texttt{Camion} (toneladas): acelera lento y frena con freno de aire.
+\end{itemize}
+
+\textbf{Función \texttt{main()}.} Se crea el \texttt{vector<Vehiculo*>} con los tres vehículos y se recorre llamando \texttt{v->acelerar()} y \texttt{v->frenar()}. Aunque el puntero es \texttt{Vehiculo*}, se ejecuta la versión de cada clase (enlace dinámico). Al final se libera la memoria.
+
+\subsection*{Código completo: \texttt{ejercicio02\_vehiculos.cpp}}
+
+\lstinputlisting{ejercicio02_vehiculos.cpp}
+
+\subsection*{Compilación y ejecución}
+
+\begin{lstlisting}[style=consola]
+g++ -std=c++17 -Wall -o ej2 ejercicio02_vehiculos.cpp
+./ej2
+\end{lstlisting}
+
+\subsection*{Salida obtenida}
+
+\begin{lstlisting}[style=consola]
+===== SISTEMA DE VEHICULOS =====
+
+[Automovil Toyota - 4 puertas] Pisa el acelerador y sube a 100 km/h de forma suave.
+[Automovil Toyota] Frena con sus frenos de disco y ABS hasta detenerse.
+--------------------------------
+[Motocicleta Honda - 250 cc] Gira el punio y acelera rapido entre los autos.
+[Motocicleta Honda] Usa freno delantero y trasero a la vez para no derrapar.
+--------------------------------
+[Camion Volvo - 30 t] Acelera lento por el peso de la carga.
+[Camion Volvo] Activa el freno de aire y necesita mas distancia para parar.
+--------------------------------
+\end{lstlisting}
+
+\subsection*{Conclusión}
+Con un solo bucle se hizo acelerar y frenar a tres vehículos distintos sin revisar su tipo. La clase abstracta asegura que todos tengan esos métodos y cada derivada decide cómo hacerlo.
+
+% =====================================================================
+\section*{Conclusiones generales}
+\begin{itemize}[leftmargin=0.5cm]
+    \item Una clase con al menos un método virtual puro es abstracta y funciona como interfaz común.
+    \item Las derivadas deben implementar esos métodos para poder crear objetos.
+    \item Usar punteros de la clase base permite tratar a todos los objetos igual y que cada uno responda a su manera.
+    \item El polimorfismo facilita agregar nuevas clases sin modificar el código que las usa.
+\end{itemize}
+
+\end{document}
